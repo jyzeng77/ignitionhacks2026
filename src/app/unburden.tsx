@@ -1,5 +1,7 @@
+import { useRouter } from 'expo-router'; // Initialize navigation
 import { useState } from 'react';
 import {
+    Alert,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -7,6 +9,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from './supabaseClient'; // Import your configured Supabase client
 
 const questions = [
   {
@@ -133,9 +136,7 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>💰</Text>
-
           <Text style={styles.brand}>MoneyQuest</Text>
-
           <Text style={styles.questionCounter}>
             {currentQuestion + 1} / {questions.length}
           </Text>
@@ -156,7 +157,6 @@ export default function HomeScreen() {
           <Text style={styles.question}>
             {question.question}
           </Text>
-
           <Text style={styles.subtitle}>
             {question.subtitle}
           </Text>
@@ -236,6 +236,45 @@ function ThemedResults({
   answers: string[];
   restart: () => void;
 }) {
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
+
+  // This handles storing answers to Supabase AND passing them to the next page
+  const generadiate = async () => {
+    setSaving(true);
+  try {
+    const { data, error } = await supabase
+      .from('user_onboarding')
+      .insert([
+        {
+          topic: answers[0],
+          knowledge_level: answers[1],
+          financial_goal: answers[2],
+          biggest_challenge: answers[3],
+          learning_preference: answers[4],
+          journey_type: answers[5],
+        },
+      ])
+      .select();
+
+    // 💡 ADD THIS LOG TO SEE WHAT DATA CAME BACK
+    console.log("Database Response Data:", data);
+
+    if (error) throw error;
+
+    router.push({
+      pathname: './educrashon',
+      params: { onboardingData: JSON.stringify(answers) }
+    });
+  } catch (error: any) {
+    // 💡 THIS WILL PRINT THE EXACT POSTGRES ERROR IN YOUR TERMINAL
+    console.error("Supabase Error Details:", error);
+    Alert.alert('Database Sync Error', error.message || 'Could not save data.');
+  } finally {
+    setSaving(false);
+  }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -263,7 +302,6 @@ function ThemedResults({
               <Text style={styles.summaryNumber}>
                 {index + 1}
               </Text>
-
               <Text style={styles.summaryAnswer}>
                 {answer}
               </Text>
@@ -271,13 +309,17 @@ function ThemedResults({
           ))}
         </View>
 
-        <Pressable style={styles.startButton}>
+        <Pressable 
+          onPress={generadiate} 
+          disabled={saving} 
+          style={[styles.startButton, saving && { opacity: 0.6 }]}
+        >
           <Text style={styles.startButtonText}>
-            Start My Journey 🚀
+            {saving ? 'Saving Choices...' : 'Start My Journey 🚀'}
           </Text>
         </Pressable>
 
-        <Pressable onPress={restart} style={styles.restartButton}>
+        <Pressable onPress={restart} disabled={saving} style={styles.restartButton}>
           <Text style={styles.restartText}>
             Retake questionnaire
           </Text>
@@ -292,7 +334,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0B1020',
   },
-
   content: {
     paddingHorizontal: 24,
     paddingTop: 20,
@@ -301,31 +342,26 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 18,
   },
-
   logo: {
     fontSize: 28,
     marginRight: 8,
   },
-
   brand: {
     color: '#FFFFFF',
     fontSize: 22,
     fontWeight: '800',
     flex: 1,
   },
-
   questionCounter: {
     color: '#8E9AAF',
     fontSize: 14,
     fontWeight: '600',
   },
-
   progressBackground: {
     height: 7,
     backgroundColor: '#20283D',
@@ -333,209 +369,32 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 45,
   },
-
   progress: {
     height: '100%',
-    backgroundColor: '#6C63FF',
-    borderRadius: 10,
+    backgroundColor: '#3ecf8e',
   },
-
   questionSection: {
     marginBottom: 30,
   },
-
   question: {
     color: '#FFFFFF',
-    fontSize: 32,
-    fontWeight: '800',
-    lineHeight: 40,
-    marginBottom: 12,
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 8,
   },
-
   subtitle: {
     color: '#8E9AAF',
     fontSize: 16,
-    lineHeight: 24,
   },
-
   options: {
-    gap: 14,
-  },
-
-  option: {
-    minHeight: 68,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#252D43',
-    backgroundColor: '#151B2D',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  selectedOption: {
-    borderColor: '#6C63FF',
-    backgroundColor: '#1D1B3D',
-  },
-
-  pressedOption: {
-    opacity: 0.75,
-    transform: [{ scale: 0.985 }],
-  },
-
-  optionText: {
-    color: '#D8DDEA',
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-  },
-
-  selectedOptionText: {
-    color: '#FFFFFF',
-  },
-
-  checkCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#6C63FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  check: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-
-  navigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 32,
-  },
-
-  backButton: {
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-  },
-
-  backText: {
-    color: '#8E9AAF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-
-  nextButton: {
-    backgroundColor: '#6C63FF',
-    paddingHorizontal: 28,
-    paddingVertical: 15,
-    borderRadius: 14,
-    minWidth: 125,
-    alignItems: 'center',
-  },
-
-  disabledButton: {
-    opacity: 0.35,
-  },
-
-  nextText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-
-  resultsContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 50,
-    maxWidth: 700,
-    width: '100%',
-    alignSelf: 'center',
-  },
-
-  resultsEmoji: {
-    fontSize: 64,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-
-  resultsTitle: {
-    color: '#FFFFFF',
-    fontSize: 34,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 14,
-  },
-
-  resultsSubtitle: {
-    color: '#8E9AAF',
-    fontSize: 16,
-    lineHeight: 25,
-    textAlign: 'center',
     marginBottom: 30,
   },
-
-  summaryCard: {
-    backgroundColor: '#151B2D',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 24,
-  },
-
-  summaryTitle: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '800',
-    marginBottom: 16,
-  },
-
-  summaryRow: {
+  option: {
+    backgroundColor: '#161F38',
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#252D43',
-  },
-
-  summaryNumber: {
-    color: '#6C63FF',
-    fontSize: 14,
-    fontWeight: '800',
-    width: 30,
-  },
-
-  summaryAnswer: {
-    color: '#D8DDEA',
-    fontSize: 15,
-    fontWeight: '600',
-    flex: 1,
-  },
-
-  startButton: {
-    backgroundColor: '#6C63FF',
-    paddingVertical: 17,
-    borderRadius: 15,
-    alignItems: 'center',
-  },
-
-  startButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '800',
-  },
-
-  restartButton: {
-    alignItems: 'center',
-    paddingVertical: 18,
-  },
-
-  restartText: {
-    color: '#8E9AAF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
+    borderWidth: 1,
+    borderColor: '#20283D',},selectedOption: {borderColor: '#3ecf8e',backgroundColor: '#1C2E4A',},pressedOption: {opacity: 0.9,},optionText: {color: '#FFFFFF',fontSize: 16,fontWeight: '500',flex: 1,},selectedOptionText: {color: '#3ecf8e',fontWeight: '700',},checkCircle: {width: 22,height: 22,borderRadius: 11,backgroundColor: '#3ecf8e',justifyContent: 'center',alignItems: 'center',},check: {color: '#0B1020',fontSize: 12,fontWeight: 'bold',},navigation: {flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center',marginTop: 10,},backButton: {paddingVertical: 12,},backText: {color: '#8E9AAF',fontSize: 16,fontWeight: '600',},nextButton: {backgroundColor: '#3ecf8e',paddingVertical: 14,paddingHorizontal: 32,borderRadius: 12,},disabledButton: {backgroundColor: '#20283D',opacity: 0.5,},nextText: {color: '#0B1020',fontSize: 16,fontWeight: '700',},resultsContent: {paddingHorizontal: 24,paddingTop: 40,paddingBottom: 40,alignItems: 'center',maxWidth: 500,width: '100%',alignSelf: 'center',},resultsEmoji: {fontSize: 64,marginBottom: 16,},resultsTitle: {color: '#FFFFFF',fontSize: 28,fontWeight: '800',textAlign: 'center',marginBottom: 8,},resultsSubtitle: {color: '#8E9AAF',fontSize: 16,textAlign: 'center',lineHeight: 24,marginBottom: 32,},summaryCard: {backgroundColor: '#161F38',borderRadius: 16,padding: 20,width: '100%',marginBottom: 32,borderWidth: 1,borderColor: '#20283D',},summaryTitle: {color: '#FFFFFF',fontSize: 18,fontWeight: '700',marginBottom: 16,},summaryRow: {flexDirection: 'row',alignItems: 'center',marginBottom: 12,},summaryNumber: {color: '#3ecf8e',fontWeight: '700',marginRight: 12,fontSize: 14,},summaryAnswer: {color: '#FFFFFF',fontSize: 15,},startButton: {backgroundColor: '#3ecf8e',paddingVertical: 16,borderRadius: 14,width: '100%',alignItems: 'center',marginBottom: 16,},startButtonText: {color: '#0B1020',fontSize: 18,fontWeight: '700',},restartButton: {paddingVertical: 12,},restartText: {color: '#8E9AAF',fontSize: 15,fontWeight: '600',},});
