@@ -3,22 +3,20 @@ import {
     Dimensions,
     Image,
     Pressable,
-    SafeAreaView,
+    ScrollView,
     StyleSheet,
     Text,
     View,
 } from "react-native";
+
 import { GameEngine } from "react-native-game-engine";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
 // ============================================================
 // PLACEHOLDER ASSETS
 // Replace these with your own local Expo assets later.
-//
-// Example:
-//
-// const CAR_IMAGE = require("./assets/car.png");
 // ============================================================
 
 const CAR_IMAGE = {
@@ -31,7 +29,6 @@ const DRIVER_IMAGE = {
 
 // ============================================================
 // FINANCIAL PROFILE
-// This is the context the game uses to personalize events.
 // ============================================================
 
 const PLAYER_PROFILE = {
@@ -78,7 +75,8 @@ const EVENTS = [
         cash: -70,
         savings: 10,
         xp: 100,
-        message: "Essential expense handled. Your financial engine stays stable.",
+        message:
+          "Essential expense handled. Your financial engine stays stable.",
       },
       {
         text: "Buy something else instead",
@@ -86,7 +84,8 @@ const EVENTS = [
         cash: -100,
         savings: -20,
         xp: 20,
-        message: "You prioritized a want over an upcoming need.",
+        message:
+          "You prioritized a want over an upcoming need.",
       },
     ],
   },
@@ -104,7 +103,8 @@ const EVENTS = [
         cash: -80,
         savings: -10,
         xp: 30,
-        message: "You can afford it, but it delays your savings goal.",
+        message:
+          "You can afford it, but it delays your savings goal.",
       },
       {
         text: "Wait and save",
@@ -112,7 +112,8 @@ const EVENTS = [
         cash: 0,
         savings: 60,
         xp: 100,
-        message: "Excellent! You separated a want from a need.",
+        message:
+          "Excellent! You separated a want from a need.",
       },
     ],
   },
@@ -130,7 +131,8 @@ const EVENTS = [
         cash: -150,
         savings: 150,
         xp: 120,
-        message: "Your emergency buffer just became stronger.",
+        message:
+          "Your emergency buffer just became stronger.",
       },
       {
         text: "Spend all $200",
@@ -138,7 +140,8 @@ const EVENTS = [
         cash: -200,
         savings: 0,
         xp: 15,
-        message: "A surprise opportunity became a missed savings opportunity.",
+        message:
+          "A surprise opportunity became a missed savings opportunity.",
       },
     ],
   },
@@ -156,7 +159,8 @@ const EVENTS = [
         cash: -45,
         savings: 5,
         xp: 90,
-        message: "Transportation is a need. You planned ahead.",
+        message:
+          "Transportation is a need. You planned ahead.",
       },
       {
         text: "Spend the $45 on entertainment",
@@ -164,7 +168,8 @@ const EVENTS = [
         cash: -45,
         savings: -25,
         xp: 10,
-        message: "A necessary expense was ignored for a want.",
+        message:
+          "A necessary expense was ignored for a want.",
       },
     ],
   },
@@ -182,7 +187,8 @@ const EVENTS = [
         cash: 0,
         savings: 75,
         xp: 110,
-        message: "You protected your budget without eliminating fun forever.",
+        message:
+          "You protected your budget without eliminating fun forever.",
       },
       {
         text: "Order the expensive meal",
@@ -190,7 +196,8 @@ const EVENTS = [
         cash: -65,
         savings: -30,
         xp: 20,
-        message: "That meal pushed you further away from your savings goal.",
+        message:
+          "That meal pushed you further away from your savings goal.",
       },
     ],
   },
@@ -208,7 +215,8 @@ const EVENTS = [
         cash: -300,
         savings: 80,
         xp: 150,
-        message: "Reducing expensive debt improves your future cash flow.",
+        message:
+          "Reducing expensive debt improves your future cash flow.",
       },
       {
         text: "Only make a tiny payment",
@@ -216,7 +224,8 @@ const EVENTS = [
         cash: -30,
         savings: -10,
         xp: 30,
-        message: "The balance remains and can continue costing you interest.",
+        message:
+          "The balance remains and can continue costing you interest.",
       },
     ],
   },
@@ -265,32 +274,42 @@ const gameLoop = (entities, { time }) => {
 // ============================================================
 
 function Gauge({ value, max, label, unit, danger }) {
-  const percentage = Math.max(0, Math.min(value / max, 1));
+  const percentage = Math.max(
+    0,
+    Math.min(value / max, 1)
+  );
 
   return (
     <View style={styles.gaugeContainer}>
       <View style={styles.gaugeOuter}>
         <View style={styles.gaugeTicks}>
-          {Array.from({ length: 11 }).map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.tick,
-                {
-                  transform: [
-                    {
-                      rotate: `${-125 + index * 25}deg`,
-                    },
-                  ],
-                },
-              ]}
-            />
-          ))}
+          {Array.from({ length: 11 }).map(
+            (_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.tick,
+                  {
+                    transform: [
+                      {
+                        rotate: `${-125 + index * 25}deg`,
+                      },
+                    ],
+                  },
+                ]}
+              />
+            )
+          )}
         </View>
 
         <View style={styles.gaugeCenter}>
-          <Text style={styles.gaugeValue}>{Math.round(value)}</Text>
-          <Text style={styles.gaugeUnit}>{unit}</Text>
+          <Text style={styles.gaugeValue}>
+            {Math.round(value)}
+          </Text>
+
+          <Text style={styles.gaugeUnit}>
+            {unit}
+          </Text>
         </View>
 
         <View
@@ -324,12 +343,17 @@ function Gauge({ value, max, label, unit, danger }) {
 // ============================================================
 
 function MoneyGauge({ value, max, label }) {
-  const percentage = Math.max(0, Math.min(value / max, 1));
+  const percentage = Math.max(
+    0,
+    Math.min(value / max, 1)
+  );
 
   return (
     <View style={styles.moneyGauge}>
       <View style={styles.moneyGaugeTop}>
-        <Text style={styles.moneyGaugeLabel}>{label}</Text>
+        <Text style={styles.moneyGaugeLabel}>
+          {label}
+        </Text>
 
         <Text style={styles.moneyGaugeValue}>
           ${Math.max(0, Math.round(value))}
@@ -357,11 +381,18 @@ function MoneyGauge({ value, max, label }) {
 function MiniStat({ label, value, icon }) {
   return (
     <View style={styles.miniStat}>
-      <Text style={styles.miniIcon}>{icon}</Text>
+      <Text style={styles.miniIcon}>
+        {icon}
+      </Text>
 
       <View>
-        <Text style={styles.miniLabel}>{label}</Text>
-        <Text style={styles.miniValue}>{value}</Text>
+        <Text style={styles.miniLabel}>
+          {label}
+        </Text>
+
+        <Text style={styles.miniValue}>
+          {value}
+        </Text>
       </View>
     </View>
   );
@@ -372,18 +403,24 @@ function MiniStat({ label, value, icon }) {
 // ============================================================
 
 export default function FinancialRaceGame() {
-  const [gameState, setGameState] = useState(initialGameState);
+  const [gameState, setGameState] = useState(
+    initialGameState
+  );
+
   const [eventIndex, setEventIndex] = useState(0);
+
   const [feedback, setFeedback] = useState(null);
-  const [gameStarted, setGameStarted] = useState(false);
+
+  const [gameStarted, setGameStarted] =
+    useState(false);
 
   const engineRef = useRef(null);
 
   const event = EVENTS[eventIndex];
 
-  // ----------------------------------------------------------
-  // Automatically increase distance while racing.
-  // ----------------------------------------------------------
+  // ==========================================================
+  // AUTOMATIC RACE MOVEMENT
+  // ==========================================================
 
   useEffect(() => {
     if (!gameStarted || feedback) {
@@ -393,9 +430,11 @@ export default function FinancialRaceGame() {
     const timer = setInterval(() => {
       setGameState((previous) => ({
         ...previous,
+
         distance: Math.min(
           100,
-          previous.distance + previous.speed / 1000
+          previous.distance +
+            previous.speed / 1000
         ),
       }));
     }, 100);
@@ -403,9 +442,9 @@ export default function FinancialRaceGame() {
     return () => clearInterval(timer);
   }, [gameStarted, feedback]);
 
-  // ----------------------------------------------------------
-  // Start race
-  // ----------------------------------------------------------
+  // ==========================================================
+  // START RACE
+  // ==========================================================
 
   function startRace() {
     setGameStarted(true);
@@ -416,9 +455,9 @@ export default function FinancialRaceGame() {
     });
   }
 
-  // ----------------------------------------------------------
-  // Player makes financial decision
-  // ----------------------------------------------------------
+  // ==========================================================
+  // FINANCIAL DECISION
+  // ==========================================================
 
   function chooseAnswer(choice) {
     const newCash = Math.max(
@@ -431,19 +470,37 @@ export default function FinancialRaceGame() {
       gameState.savings + choice.savings
     );
 
-    const newXP = gameState.xp + choice.xp;
+    const newXP =
+      gameState.xp + choice.xp;
 
     setGameState((previous) => ({
       ...previous,
+
       cash: newCash,
+
       savings: newSavings,
+
       xp: newXP,
+
       speed: choice.correct
-        ? Math.min(100, previous.speed + 8)
-        : Math.max(25, previous.speed - 12),
+        ? Math.min(
+            100,
+            previous.speed + 8
+          )
+        : Math.max(
+            25,
+            previous.speed - 12
+          ),
+
       distance: choice.correct
-        ? Math.min(100, previous.distance + 8)
-        : Math.max(0, previous.distance - 4),
+        ? Math.min(
+            100,
+            previous.distance + 8
+          )
+        : Math.max(
+            0,
+            previous.distance - 4
+          ),
     }));
 
     setFeedback({
@@ -452,9 +509,9 @@ export default function FinancialRaceGame() {
     });
   }
 
-  // ----------------------------------------------------------
-  // Continue to next financial event
-  // ----------------------------------------------------------
+  // ==========================================================
+  // NEXT EVENT
+  // ==========================================================
 
   function continueRace() {
     if (eventIndex >= EVENTS.length - 1) {
@@ -466,368 +523,434 @@ export default function FinancialRaceGame() {
     setFeedback(null);
   }
 
-  // ----------------------------------------------------------
-  // Start screen
-  // ----------------------------------------------------------
+  // ==========================================================
+  // START SCREEN
+  // ==========================================================
 
   if (!gameStarted) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.startScreen}>
-
-          <Text style={styles.logo}>FINANCE GP</Text>
-
-          <Text style={styles.startTitle}>
-            RACE YOUR
-            {"\n"}
-            FINANCIAL FUTURE
-          </Text>
-
-          <Text style={styles.startDescription}>
-            Make everyday money decisions.
-            Build savings, protect your cash flow,
-            and reach the finish line.
-          </Text>
-
-          <View style={styles.previewCard}>
-            <Image
-              source={CAR_IMAGE}
-              style={styles.previewCar}
-            />
-
-            <View style={styles.previewOverlay}>
-              <Text style={styles.previewText}>
-                YOUR FINANCIAL VEHICLE
-              </Text>
-
-              <Text style={styles.previewSubtext}>
-                Placeholder asset
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.goalRow}>
-            <MiniStat
-              icon="💵"
-              label="Starting Cash"
-              value="$850"
-            />
-
-            <MiniStat
-              icon="🛡️"
-              label="Savings"
-              value="$420"
-            />
-          </View>
-
-          <Pressable
-            style={styles.startButton}
-            onPress={startRace}
-          >
-            <Text style={styles.startButtonText}>
-              START RACE →
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={
+            styles.scrollContent
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.startScreen}>
+            <Text style={styles.logo}>
+              FINANCE GP
             </Text>
-          </Pressable>
 
-        </View>
+            <Text style={styles.startTitle}>
+              RACE YOUR{"\n"}
+              FINANCIAL FUTURE
+            </Text>
+
+            <Text style={styles.startDescription}>
+              Make everyday money decisions.
+              Build savings, protect your cash
+              flow, and reach the finish line.
+            </Text>
+
+            <View style={styles.previewCard}>
+              <Image
+                source={CAR_IMAGE}
+                style={styles.previewCar}
+              />
+
+              <View style={styles.previewOverlay}>
+                <Text style={styles.previewText}>
+                  YOUR FINANCIAL VEHICLE
+                </Text>
+
+                <Text
+                  style={styles.previewSubtext}
+                >
+                  Placeholder asset
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.goalRow}>
+              <MiniStat
+                icon="💵"
+                label="Starting Cash"
+                value="$850"
+              />
+
+              <MiniStat
+                icon="🛡️"
+                label="Savings"
+                value="$420"
+              />
+            </View>
+
+            <Pressable
+              style={styles.startButton}
+              onPress={startRace}
+            >
+              <Text
+                style={styles.startButtonText}
+              >
+                START RACE →
+              </Text>
+            </Pressable>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
 
+  // ==========================================================
+  // MAIN RACE SCREEN
+  // ==========================================================
+
   return (
     <SafeAreaView style={styles.container}>
-      <GameEngine
-        ref={engineRef}
-        style={styles.engine}
-        systems={[gameLoop]}
-        entities={{
-          player: {
-            position: {
-              x: 0,
-              y: 0,
-            },
-          },
-        }}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={
+          styles.scrollContent
+        }
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
+        <GameEngine
+          ref={engineRef}
+          style={styles.engine}
+          systems={[gameLoop]}
+          entities={{
+            player: {
+              position: {
+                x: 0,
+                y: 0,
+              },
+            },
+          }}
+        >
+          {/* ==================================================
+              TOP HUD
+          ================================================== */}
 
-        {/* ====================================================
-            TOP HUD
-        ==================================================== */}
-
-        <View style={styles.topHud}>
-
-          <View>
-            <Text style={styles.smallTitle}>
-              FINANCE GP
-            </Text>
-
-            <Text style={styles.raceTitle}>
-              MONACO OF MONEY
-            </Text>
-          </View>
-
-          <View style={styles.lapBox}>
-            <Text style={styles.lapLabel}>
-              LAP
-            </Text>
-
-            <Text style={styles.lapNumber}>
-              {gameState.lap}/5
-            </Text>
-          </View>
-
-        </View>
-
-        {/* ====================================================
-            TRACK
-        ==================================================== */}
-
-        <View style={styles.trackSection}>
-
-          <View style={styles.trackRoad}>
-
-            <View style={styles.trackLine} />
-
-            <Image
-              source={CAR_IMAGE}
-              style={[
-                styles.raceCar,
-                {
-                  left: `${gameState.distance}%`,
-                },
-              ]}
-            />
-
-            <View style={styles.finishLine} />
-
-          </View>
-
-          <View style={styles.trackLabels}>
-            <Text style={styles.trackStart}>
-              START
-            </Text>
-
-            <Text style={styles.trackFinish}>
-              FINISH
-            </Text>
-          </View>
-
-        </View>
-
-        {/* ====================================================
-            DASHBOARD
-        ==================================================== */}
-
-        <View style={styles.dashboard}>
-
-          <View style={styles.dashboardTop}>
-
-            <Gauge
-              value={gameState.speed}
-              max={100}
-              label="CASH FLOW"
-              unit="%"
-            />
-
-            <View style={styles.driverSection}>
-
-              <View style={styles.driverCircle}>
-                <Image
-                  source={DRIVER_IMAGE}
-                  style={styles.driverImage}
-                />
-              </View>
-
-              <Text style={styles.driverName}>
-                DRIVER
+          <View style={styles.topHud}>
+            <View>
+              <Text style={styles.smallTitle}>
+                FINANCE GP
               </Text>
 
-              <Text style={styles.driverLevel}>
-                FINANCIAL LEVEL {Math.floor(gameState.xp / 300) + 1}
+              <Text style={styles.raceTitle}>
+                MONACO OF MONEY
               </Text>
-
             </View>
 
-            <Gauge
-              value={Math.min(
-                100,
-                gameState.savings / 10
-              )}
-              max={100}
-              label="SAFETY"
-              unit="%"
-              danger={gameState.savings < 200}
-            />
+            <View style={styles.lapBox}>
+              <Text style={styles.lapLabel}>
+                LAP
+              </Text>
 
+              <Text style={styles.lapNumber}>
+                {gameState.lap}/5
+              </Text>
+            </View>
           </View>
 
           {/* ==================================================
-              MONEY BARS
+              TRACK
           ================================================== */}
 
-          <View style={styles.moneySection}>
+          <View style={styles.trackSection}>
+            <View style={styles.trackRoad}>
+              <View style={styles.trackLine} />
 
-            <MoneyGauge
-              value={gameState.cash}
-              max={1500}
-              label="AVAILABLE CASH"
-            />
+              <Image
+                source={CAR_IMAGE}
+                style={[
+                  styles.raceCar,
+                  {
+                    left: `${Math.min(
+                      gameState.distance,
+                      88
+                    )}%`,
+                  },
+                ]}
+              />
 
-            <MoneyGauge
-              value={gameState.savings}
-              max={1500}
-              label="EMERGENCY FUND"
-            />
+              <View style={styles.finishLine} />
+            </View>
 
+            <View style={styles.trackLabels}>
+              <Text style={styles.trackStart}>
+                START
+              </Text>
+
+              <Text style={styles.trackFinish}>
+                FINISH
+              </Text>
+            </View>
           </View>
 
           {/* ==================================================
-              STATS
+              DASHBOARD
           ================================================== */}
 
-          <View style={styles.statsRow}>
+          <View style={styles.dashboard}>
+            <View style={styles.dashboardTop}>
+              <Gauge
+                value={gameState.speed}
+                max={100}
+                label="CASH FLOW"
+                unit="%"
+              />
 
-            <MiniStat
-              icon="💰"
-              label="CASH"
-              value={`$${Math.round(gameState.cash)}`}
-            />
-
-            <MiniStat
-              icon="🛡️"
-              label="SAVINGS"
-              value={`$${Math.round(gameState.savings)}`}
-            />
-
-            <MiniStat
-              icon="⭐"
-              label="XP"
-              value={gameState.xp}
-            />
-
-            <MiniStat
-              icon="🏁"
-              label="DISTANCE"
-              value={`${Math.round(gameState.distance)}%`}
-            />
-
-          </View>
-
-        </View>
-
-        {/* ====================================================
-            FINANCIAL EVENT
-        ==================================================== */}
-
-        {gameState.eventActive && (
-          <View style={styles.eventContainer}>
-
-            <View style={styles.eventHeader}>
-
-              <View style={styles.categoryBadge}>
-                <Text style={styles.categoryText}>
-                  {event.category}
-                </Text>
-              </View>
-
-              <Text style={styles.eventNumber}>
-                DECISION {eventIndex + 1}/{EVENTS.length}
-              </Text>
-
-            </View>
-
-            <Text style={styles.eventTitle}>
-              {event.title}
-            </Text>
-
-            <Text style={styles.eventDescription}>
-              {event.description}
-            </Text>
-
-            {!feedback ? (
-              <View style={styles.choiceContainer}>
-
-                {event.choices.map((choice, index) => (
-                  <Pressable
-                    key={index}
-                    style={[
-                      styles.choiceButton,
-                      index === 0
-                        ? styles.primaryChoice
-                        : styles.secondaryChoice,
-                    ]}
-                    onPress={() => chooseAnswer(choice)}
-                  >
-
-                    <View style={styles.choiceNumber}>
-                      <Text style={styles.choiceNumberText}>
-                        {index + 1}
-                      </Text>
-                    </View>
-
-                    <Text style={styles.choiceText}>
-                      {choice.text}
-                    </Text>
-
-                    <Text style={styles.choiceArrow}>
-                      →
-                    </Text>
-
-                  </Pressable>
-                ))}
-
-              </View>
-            ) : (
-              <View style={styles.feedbackContainer}>
-
-                <Text
-                  style={[
-                    styles.feedbackTitle,
-                    feedback.correct
-                      ? styles.correct
-                      : styles.incorrect,
-                  ]}
-                >
-                  {feedback.correct
-                    ? "PERFECT DECISION"
-                    : "FINANCIAL SETBACK"}
-                </Text>
-
-                <Text style={styles.feedbackMessage}>
-                  {feedback.message}
-                </Text>
-
-                <View style={styles.feedbackStats}>
-
-                  <Text style={styles.feedbackXP}>
-                    +{event.choices.find(
-                      (c) =>
-                        c.correct === feedback.correct
-                    )?.xp || 0} XP
-                  </Text>
-
-                  <Text style={styles.feedbackCash}>
-                    CASH FLOW UPDATED
-                  </Text>
-
+              <View style={styles.driverSection}>
+                <View style={styles.driverCircle}>
+                  <Image
+                    source={DRIVER_IMAGE}
+                    style={styles.driverImage}
+                  />
                 </View>
 
-                <Pressable
-                  style={styles.continueButton}
-                  onPress={continueRace}
+                <Text style={styles.driverName}>
+                  DRIVER
+                </Text>
+
+                <Text
+                  style={styles.driverLevel}
                 >
-                  <Text style={styles.continueText}>
-                    CONTINUE RACE →
-                  </Text>
-                </Pressable>
-
+                  FINANCIAL LEVEL{" "}
+                  {Math.floor(
+                    gameState.xp / 300
+                  ) + 1}
+                </Text>
               </View>
-            )}
 
+              <Gauge
+                value={Math.min(
+                  100,
+                  gameState.savings / 10
+                )}
+                max={100}
+                label="SAFETY"
+                unit="%"
+                danger={
+                  gameState.savings < 200
+                }
+              />
+            </View>
+
+            {/* ==================================================
+                MONEY BARS
+            ================================================== */}
+
+            <View style={styles.moneySection}>
+              <MoneyGauge
+                value={gameState.cash}
+                max={1500}
+                label="AVAILABLE CASH"
+              />
+
+              <MoneyGauge
+                value={gameState.savings}
+                max={1500}
+                label="EMERGENCY FUND"
+              />
+            </View>
+
+            {/* ==================================================
+                STATS
+            ================================================== */}
+
+            <View style={styles.statsRow}>
+              <MiniStat
+                icon="💰"
+                label="CASH"
+                value={`$${Math.round(
+                  gameState.cash
+                )}`}
+              />
+
+              <MiniStat
+                icon="🛡️"
+                label="SAVINGS"
+                value={`$${Math.round(
+                  gameState.savings
+                )}`}
+              />
+
+              <MiniStat
+                icon="⭐"
+                label="XP"
+                value={gameState.xp}
+              />
+
+              <MiniStat
+                icon="🏁"
+                label="DISTANCE"
+                value={`${Math.round(
+                  gameState.distance
+                )}%`}
+              />
+            </View>
           </View>
-        )}
 
-      </GameEngine>
+          {/* ==================================================
+              FINANCIAL EVENT
+          ================================================== */}
+
+          {gameState.eventActive && (
+            <View style={styles.eventContainer}>
+              <View style={styles.eventHeader}>
+                <View
+                  style={styles.categoryBadge}
+                >
+                  <Text
+                    style={styles.categoryText}
+                  >
+                    {event.category}
+                  </Text>
+                </View>
+
+                <Text
+                  style={styles.eventNumber}
+                >
+                  DECISION {eventIndex + 1}/
+                  {EVENTS.length}
+                </Text>
+              </View>
+
+              <Text style={styles.eventTitle}>
+                {event.title}
+              </Text>
+
+              <Text
+                style={styles.eventDescription}
+              >
+                {event.description}
+              </Text>
+
+              {!feedback ? (
+                <View
+                  style={styles.choiceContainer}
+                >
+                  {event.choices.map(
+                    (choice, index) => (
+                      <Pressable
+                        key={index}
+                        style={[
+                          styles.choiceButton,
+                          index === 0
+                            ? styles.primaryChoice
+                            : styles.secondaryChoice,
+                        ]}
+                        onPress={() =>
+                          chooseAnswer(choice)
+                        }
+                      >
+                        <View
+                          style={
+                            styles.choiceNumber
+                          }
+                        >
+                          <Text
+                            style={
+                              styles.choiceNumberText
+                            }
+                          >
+                            {index + 1}
+                          </Text>
+                        </View>
+
+                        <Text
+                          style={styles.choiceText}
+                        >
+                          {choice.text}
+                        </Text>
+
+                        <Text
+                          style={styles.choiceArrow}
+                        >
+                          →
+                        </Text>
+                      </Pressable>
+                    )
+                  )}
+                </View>
+              ) : (
+                <View
+                  style={
+                    styles.feedbackContainer
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.feedbackTitle,
+                      feedback.correct
+                        ? styles.correct
+                        : styles.incorrect,
+                    ]}
+                  >
+                    {feedback.correct
+                      ? "PERFECT DECISION"
+                      : "FINANCIAL SETBACK"}
+                  </Text>
+
+                  <Text
+                    style={
+                      styles.feedbackMessage
+                    }
+                  >
+                    {feedback.message}
+                  </Text>
+
+                  <View
+                    style={
+                      styles.feedbackStats
+                    }
+                  >
+                    <Text
+                      style={styles.feedbackXP}
+                    >
+                      +
+                      {event.choices.find(
+                        (c) =>
+                          c.correct ===
+                          feedback.correct
+                      )?.xp || 0}{" "}
+                      XP
+                    </Text>
+
+                    <Text
+                      style={
+                        styles.feedbackCash
+                      }
+                    >
+                      CASH FLOW UPDATED
+                    </Text>
+                  </View>
+
+                  <Pressable
+                    style={
+                      styles.continueButton
+                    }
+                    onPress={continueRace}
+                  >
+                    <Text
+                      style={
+                        styles.continueText
+                      }
+                    >
+                      CONTINUE RACE →
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+          )}
+
+          <View style={{ height: 40 }} />
+        </GameEngine>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -842,17 +965,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#080A0F",
   },
 
-  engine: {
+  scrollView: {
     flex: 1,
+  },
+
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
+
+  engine: {
+    minHeight: 850,
     backgroundColor: "#080A0F",
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // START SCREEN
-  // ----------------------------------------------------------
+  // ==========================================================
 
   startScreen: {
-    flex: 1,
+    minHeight: height,
     padding: 24,
     justifyContent: "center",
   },
@@ -937,9 +1069,9 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // HUD
-  // ----------------------------------------------------------
+  // ==========================================================
 
   topHud: {
     flexDirection: "row",
@@ -983,9 +1115,9 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // TRACK
-  // ----------------------------------------------------------
+  // ==========================================================
 
   trackSection: {
     height: 105,
@@ -1049,9 +1181,9 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // DASHBOARD
-  // ----------------------------------------------------------
+  // ==========================================================
 
   dashboard: {
     marginHorizontal: 18,
@@ -1068,9 +1200,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // GAUGES
-  // ----------------------------------------------------------
+  // ==========================================================
 
   gaugeContainer: {
     alignItems: "center",
@@ -1102,7 +1234,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#636B77",
     left: 51,
     top: 5,
-    transformOrigin: "center 48px",
   },
 
   gaugeCenter: {
@@ -1128,7 +1259,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#A8FF60",
     bottom: 50,
     left: 51,
-    transformOrigin: "center bottom",
   },
 
   gaugeLabel: {
@@ -1143,9 +1273,9 @@ const styles = StyleSheet.create({
     color: "#FF6577",
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // DRIVER
-  // ----------------------------------------------------------
+  // ==========================================================
 
   driverSection: {
     alignItems: "center",
@@ -1179,9 +1309,9 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // MONEY
-  // ----------------------------------------------------------
+  // ==========================================================
 
   moneySection: {
     marginTop: 12,
@@ -1224,9 +1354,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // STATS
-  // ----------------------------------------------------------
+  // ==========================================================
 
   statsRow: {
     flexDirection: "row",
@@ -1260,9 +1390,9 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // EVENT
-  // ----------------------------------------------------------
+  // ==========================================================
 
   eventContainer: {
     marginHorizontal: 18,
@@ -1364,9 +1494,9 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // FEEDBACK
-  // ----------------------------------------------------------
+  // ==========================================================
 
   feedbackContainer: {
     marginTop: 14,
