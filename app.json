@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ignitionhacks",
-    "slug": "ignitionhacks",
+    "name": "Fin1",
+    "slug": "Fin1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ignitionhacks",
+    "scheme": "Fin1",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
