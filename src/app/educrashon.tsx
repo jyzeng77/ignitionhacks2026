@@ -111,8 +111,8 @@ export default function EduCrashon() {
             <Text style={styles.scoreValue}>{score} / {tailoredQuestions.length}</Text>
           </View>
 
-          <Pressable style={styles.actionBtn} onPress={() => router.replace('/')}>
-            <Text style={styles.actionBtnText}>Back to Dashboard</Text>
+          <Pressable style={styles.actionBtn} onPress={() => router.replace('./ratesync')}>
+            <Text style={styles.actionBtnText}>Invest your interest</Text>
           </Pressable>
         </ScrollView>
       </SafeAreaView>
